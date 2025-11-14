@@ -19,17 +19,23 @@ def randomize_data(file_path):
             options = question['options']
             correct_indices = question['correct']
             
+            # Filter out invalid indices
+            valid_correct = [idx for idx in correct_indices if 0 <= idx < len(options)]
+            if len(valid_correct) != len(correct_indices):
+                print(f"Warning: Question {question['id']} had invalid indices, fixed")
+                question['correct'] = valid_correct
+            
             # Create mapping of old index to new index
-            old_to_new = list(range(len(options)))
-            random.shuffle(old_to_new)
+            indices = list(range(len(options)))
+            random.shuffle(indices)
             
             # Reorder options
-            new_options = [options[i] for i in old_to_new]
+            new_options = [options[i] for i in indices]
             
             # Update correct indices
             new_correct = []
-            for old_idx in correct_indices:
-                new_idx = old_to_new.index(old_idx)
+            for old_idx in valid_correct:
+                new_idx = indices.index(old_idx)
                 new_correct.append(new_idx)
             
             question['options'] = new_options

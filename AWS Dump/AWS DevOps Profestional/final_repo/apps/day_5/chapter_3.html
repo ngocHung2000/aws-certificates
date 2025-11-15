@@ -101,130 +101,79 @@
         let questions = [
     {
         "id": 1,
-        "text": "A DevOps engineer is implementing governance controls for a company that requires its infrastructure to be housed within the United States. The engineer must restrict which AWS Regions can be used, and ensure an alert is sent as soon as possible if any activity outside the governance policy takes place. The controls should be automatically enabled on any new Region outside the United States (US).Which combination of actions will meet these requirements? (Choose two.)",
+        "text": "A company has an application that stores data that includes personally identifiable information (PII) in an Amazon S3 bucket. All data is encrypted with AWS Key Management Service (AWS KMS) customer managed keys. All AWS resources are deployed from an AWS CloudFormation template.A DevOps engineer needs to set up a development environment for the application in a different AWS account. The data in the development environment's S3 bucket needs to be updated once a week from the production environment's S3 bucket.The company must not move PII from the production environment without anonymizing the PII first. The data in each environment must be encrypted with different KMS customer managed keys.Which combination of steps should the DevOps engineer take to meet these requirements? (Choose two.)",
         "options": [
-            "Create an AWS Organizations SCP that denies access to all non-global services in non-US Regions. Attach the policy to the root of the organization.",
-            "Use an AWS Lambda function that checks for AWS service activity and deploy it to all Regions. Write an Amazon EventBridge rule that runs the Lambda function every hour, sending an alert if activity is found in a non-US Region.",
-            "Use an AWS Lambda function to query Amazon Inspector to look for service activity in non-US Regions and send alerts if any activity is found.",
-            "Write an SCP using the aws:RequestedRegion condition key limiting access to US Regions. Apply the policy to all users, groups, and roles.",
-            "Configure AWS CloudTrail to send logs to Amazon CloudWatch Logs and enable it for all Regions. Use a CloudWatch Logs metric filter to send an alert on any service activity in non-US Regions."
+            "Create a development environment from the CloudFormation template in the development account. Schedule an Amazon EventBridge rule to start the AWS Step Functions state machine once a week.",
+            "Create a development environment from the CloudFormation template in the development account. Schedule a cron job on an Amazon EC2 instance to run once a week to start the S3 Batch Operations job.",
+            "Activate Amazon Macie on the S3 bucket in the production account. Create an AWS Step Functions state machine to initiate a discovery job and redact all PII before copying files to the S3 bucket in the development account. Give the state machine tasks decrypt permissions on the KMS key in the production account. Give the state machine tasks encrypt permissions on the KMS key in the development account.",
+            "Set up an S3 Batch Operations job to copy files from the production S3 bucket to the development S3 bucket. In the development account, configure an AWS Lambda function to redact ail PII. Configure S3 Object Lambda to use the Lambda function for S3 GET requests. Give the Lambda function's IAM role encrypt and decrypt permissions on the KMS key in the development account.",
+            "Set up S3 replication between the production S3 bucket and the development S3 bucket. Activate Amazon Macie on the development S3 bucket. Create an AWS Step Functions state machine to initiate a discovery job and redact all PII as the files are copied to the development S3 bucket. Give the state machine tasks encrypt and decrypt permissions on the KMS key in the development account."
         ],
         "correct": [
             0,
-            4
+            2
         ],
         "type": "multiple",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
         "id": 2,
-        "text": "A company has a new AWS account that teams will use to deploy various applications. The teams will create many Amazon S3 buckets for application-specific purposes and to store AWS CloudTrail logs. The company has enabled Amazon Macie for the account.A DevOps engineer needs to optimize the Macie costs for the account without compromising the account's functionality.Which solutions will meet these requirements? (Choose two.)",
+        "text": "A company releases a new application in a new AWS account. The application includes an AWS Lambda function that processes messages from an Amazon Simple Queue Service (Amazon SQS) standard queue. The Lambda function stores the results in an Amazon S3 bucket for further downstream processing. The Lambda function needs to process the messages within a specific period of time after the messages are published. The Lambda function has a batch size of 10 messages and takes a few seconds to process a batch of messages.As load increases on the application's first day of service, messages in the queue accumulate at a greater rate than the Lambda function can process the messages. Some messages miss the required processing timelines. The logs show that many messages in the queue have data that is not valid. The company needs to meet the timeline requirements for messages that have valid data.Which solution will meet these requirements?",
         "options": [
-            "Exclude S3 buckets that contain CloudTrail logs from automated discovery.",
-            "Configure discovery jobs to include S3 objects based on the last modified criterion.",
-            "Exclude S3 buckets that have public read access from automated discovery.",
-            "Configure scheduled daily discovery jobs for all S3 buckets in the account.",
-            "Configure discovery jobs to include S3 objects that are tagged as production only."
+            "Keep the Lambda function's batch size the same. Configure the Lambda function to report failed batch items. Configure an SQS dead-letter queue.",
+            "Reduce the Lambda function's batch size. Increase the SQS message throughput quota. Request a Lambda concurrency increase in the AWS Region.",
+            "Increase the Lambda function's batch size. Change the SQS standard queue to an SQS FIFO queue. Request a Lambda concurrency increase in the AWS Region.",
+            "Increase the Lambda function's batch size. Configure S3 Transfer Acceleration on the S3 bucket. Configure an SQS dead-letter queue."
         ],
         "correct": [
-            0,
-            1
+            0
         ],
-        "type": "multiple",
+        "type": "single",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
         "id": 3,
-        "text": "A company is reviewing its IAM policies. One policy written by the DevOps engineer has been flagged as too permissive. The policy is used by an AWS Lambda function that issues a stop command to Amazon EC2 instances tagged with Environment: NonProduction over the weekend. The current policy is:What changes should the engineer make to achieve a policy of least permission? (Choose three.)",
+        "text": "A company has developed a static website hosted on an Amazon S3 bucket. The website is deployed using AWS CloudFormation. The CloudFormation template defines an S3 bucket and a custom resource that copies content into the bucket from a source location.The company has decided that it needs to move the website to a new location, so the existing CloudFormation stack must be deleted and re-created. However, CloudFormation reports that the stack could not be deleted cleanly.What is the MOST likely cause and how can the DevOps engineer mitigate this problem for this and future versions of the website?",
         "options": [
-            "Change \"Action\": \"ec2:*\"to \"Action\": \"ec2:StopInstances\"",
-            "Add the following conditional expression:",
-            "Add the following conditional expression:",
-            "Change \"Resource\": \"*\"to \"Resource\": \"arn:aws:ec2:*:*:instance/*\"",
-            "Add the following conditional expression:",
-            "Add the following conditional expression:"
+            "Deletion has failed because the S3 bucket is not empty. Modify the custom resource's AWS Lambda function code to recursively empty the bucket when RequestType is Delete.",
+            "Deletion has failed because the S3 bucket is not empty. Modify the S3 bucket resource in the CloudFormation template to add a DeletionPolicy property with a value of Empty.",
+            "Deletion has failed because the custom resource does not define a deletion policy. Add a DeletionPolicy property to the custom resource definition with a value of RemoveOnDeletion.",
+            "Deletion has failed because the S3 bucket has an active website configuration. Modify the CloudFormation template to remove the WebsiteConfiguration property from the S3 bucket resource."
         ],
         "correct": [
-            3
+            0
         ],
-        "type": "multiple",
+        "type": "single",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
         "id": 4,
-        "text": "A company runs applications in an Amazon Elastic Kubernetes Service (Amazon EKS) cluster. The EKS cluster uses an Application Load Balancer to route traffic to the applications that run in the cluster.A new application that was migrated to the EKS cluster is performing poorly. All the other applications in the EKS cluster maintain appropriate operation. The new application scales out horizontally to the preconfigured maximum number of pods immediately upon deployment, before any user traffic routes to the web application.Which solution will resolve the scaling behavior of the web application in the EKS cluster?",
+        "text": "A company runs its container workloads in AWS App Runner. A DevOps engineer manages the company's container repository in Amazon Elastic Container Registry (Amazon ECR).The DevOps engineer must implement a solution that continuously monitors the container repository. The solution must create a new container image when the solution detects an operating system vulnerability or language package vulnerability.Which solution will meet these requirements?",
         "options": [
-            "Implement the AWS Load Balancer Controller in the EKS cluster.",
-            "Implement the Vertical Pod Autoscaler in the EKS cluster.",
-            "Implement the Cluster Autoscaler.",
-            "Implement the Horizontal Pod Autoscaler in the EKS cluster."
+            "Create an AWS CodeBuild project to create a container image. Use Amazon ECR as the target repository. Configure AWS Systems Manager Compliance to scan all managed nodes. Create an Amazon EventBridge rule to capture a configuration compliance state change event. Use the event to invoke the CodeBuild project.",
+            "Create an AWS CodeBuild project to create a container image. Use Amazon ECR as the target repository. Turn on basic scanning on the repository. Create an Amazon EventBridge rule to capture an ECR image action event. Use the event to invoke the CodeBuild project. Re-upload the container to the repository.",
+            "Use EC2 Image Builder to create a container image pipeline. Use Amazon ECR as the target repository. Enable Amazon GuardDuty Malware Protection on the container workload. Create an Amazon EventBridge rule to capture a GuardDuty finding event. Use the event to invoke the image pipeline.",
+            "Use EC2 Image Builder to create a container image pipeline. Use Amazon ECR as the target repository. Turn on enhanced scanning on the ECR repository. Create an Amazon EventBridge rule to capture an Inspector? finding event. Use the event to invoke the image pipeline. Re-upload the container to the repository."
         ],
         "correct": [
-            1
+            3
         ],
         "type": "single",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
         "id": 5,
-        "text": "A company needs to ensure that flow logs remain configured for all existing and new VPCs in its AWS account. The company uses an AWS CloudFormation stack to manage its VPCs. The company needs a solution that will work for any VPCs that any IAM user creates.Which solution will meet these requirements?",
+        "text": "A company deploys an application in two AWS Regions. The application currently uses an Amazon S3 bucket in the primary Region to store data.A DevOps engineer needs to ensure that the application is highly available in both Regions. The DevOps engineer has created a new S3 bucket in the secondary Region. All existing and new objects must be in both S3 buckets. The application must fail over between the Regions with no data loss.Which combination of steps will meet these requirements with the MOST operational efficiency? (Choose three.)",
         "options": [
-            "Create an IAM policy to deny the use of API calls for VPC flow logs. Attach the IAM policy to all IAM users.",
-            "Create an organization in AWS Organizations. Add the company's AWS account to the organization. Create an SCP to prevent users from modifying VPC flow logs.",
-            "Turn on AWS Config. Create an AWS Config rule to check whether VPC flow logs are turned on. Configure automatic remediation to turn on VPC flow logs.",
-            "Add the AWS::EC2::FlowLog resource to the CloudFormation stack that creates the VPCs."
-        ],
-        "correct": [
-            2
-        ],
-        "type": "single",
-        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
-    },
-    {
-        "id": 6,
-        "text": "A company uses an organization in AWS Organizations to manage its AWS accounts. The company recently acquired another company that has standalone AWS accounts. The acquiring company's DevOps team needs to consolidate the administration of the AWS accounts for both companies and retain full administrative control of the accounts. The DevOps team also needs to collect and group findings across all the accounts to implement and maintain a security posture.Which combination of steps should the DevOps team take to meet these requirements? (Choose two.)",
-        "options": [
-            "Invite the acquired company's AWS accounts to join the organization. Create an SCP that has full administrative privileges. Attach the SCP to the management account.",
-            "Use AWS Firewall Manager to collect and group findings across all accounts. Enable all features for the organization. Designate an account in the organization as the delegated administrator account for Firewall Manager.",
-            "Use AWS Security Hub to collect and group findings across all accounts. Use Security Hub to automatically detect new accounts as the accounts are added to the organization.",
-            "Invite the acquired company's AWS accounts to join the organization. Create the OrganizationAccountAccessRole IAM role in the invited accounts. Grant permission to the management account to assume the role.",
-            "Use Amazon Inspector to collect and group findings across all accounts. Designate an account in the organization as the delegated administrator account for Amazon Inspector."
+            "Create an AWS Batch job that has an AWS Fargate orchestration type. Configure the job to use the IAM role for AWS Batch. Specify a Bash command to use the AWS CLI to synchronize the contents of the source S3 bucket and the target S3 bucket",
+            "Create a new IAM role that allows the AWS Batch service principal to assume the role that has the necessary permissions for S3 replication.",
+            "Create a two-way replication rule on the source S3 bucket. Configure the rule to use the IAM role for Amazon S3 to replicate to the target S3 bucket.",
+            "Create an S3 Cross-Region Replication (CRR) rule on the source S3 bucket. Configure the rule to use the IAM role for Amazon S3 to replicate to the target S3 bucket.",
+            "Create a new IAM role that allows the Amazon S3 and S3 Batch Operations service principals to assume the role that has the necessary permissions for S3 replication.",
+            "Create an operation in S3 Batch Operations to replicate the contents of the source S3 bucket to the target S3 bucket. Configure the operation to use the IAM role for Amazon S3."
         ],
         "correct": [
             2,
-            3
-        ],
-        "type": "multiple",
-        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
-    },
-    {
-        "id": 7,
-        "text": "A company is launching an application. The application must use only approved AWS services. The account that runs the application was created less than 1 year ago and is assigned to an AWS Organizations OU.The company needs to create a new Organizations account structure. The account structure must have an appropriate SCP that supports the use of only services that are currently active in the AWS account. The company will use AWS Identity and Access Management (IAM) Access Analyzer in the solution.Which solution will meet these requirements?",
-        "options": [
-            "Create an SCP that denies the services that IAM Access Analyzer identifies. Create an OU for the account. Move the account into the new OU. Attach the new SCP to the new OU.",
-            "Create an SCP that allows the services that IAM Access Analyzer identifies. Create an OU for the account. Move the account into the new OU. Attach the new SCP to the new OU. Detach the default FullAWSAccess SCP from the new OU.",
-            "Create an SCP that allows the services that IAM Access Analyzer identifies. Create an OU for the account. Move the account into the new OU. Attach the new SCP to the management account. Detach the default FullAWSAccess SCP from the new OU.",
-            "Create an SCP that allows the services that IAM Access Analyzer identifies. Attach the new SCP to the organization's root."
-        ],
-        "correct": [
-            1
-        ],
-        "type": "single",
-        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
-    },
-    {
-        "id": 8,
-        "text": "A company builds an application that uses an Application Load Balancer in front of Amazon EC2 instances that are in an Auto Scaling group. The application is stateless. The Auto Scaling group uses a custom AMI that is fully prebuilt. The EC2 instances do not have a custom bootstrapping process.The AMI that the Auto Scaling group uses was recently deleted. The Auto Scaling group's scaling activities show failures because the AMI ID does not exist.Which combination of steps should a DevOps engineer take to meet these requirements? (Choose three.)",
-        "options": [
-            "Create a new launch template that uses the new AMI.",
-            "Increase the Auto Scaling group's desired capacity by 1.",
-            "Create a new AMI by copying the most recent public AMI of the operating system that the EC2 instances use.",
-            "Reduce the Auto Scaling group's desired capacity to 0.",
-            "Create a new AMI from a running EC2 instance in the Auto Scaling group.",
-            "Update the Auto Scaling group to use the new launch template."
-        ],
-        "correct": [
-            0,
             4,
             5
         ],
@@ -232,39 +181,81 @@
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
-        "id": 9,
-        "text": "A company uses an Amazon API Gateway regional REST API to host its application API. The REST API has a custom domain. The REST API's default endpoint is deactivated.The company's internal teams consume the API. The company wants to use mutual TLS between the API and the internal teams as an additional layer of authentication.Which combination of steps will meet these requirements? (Choose two.)",
+        "id": 6,
+        "text": "A company needs to adopt a multi-account strategy to deploy its applications and the associated CI/CD infrastructure. The company has created an organization in AWS Organizations that has all features enabled. The company has configured AWS Control Tower and has set up a landing zone.The company needs to use AWS Control Tower controls (guardrails) in all AWS accounts in the organization. The company must create the accounts for a multi-environment application and must ensure that all accounts are configured to an initial baseline.Which solution will meet these requirements with the LEAST operational overhead?",
         "options": [
-            "Upload the root private certificate authority (CA) certificate to an Amazon S3 bucket. Configure the API Gateway mutual TLS to use the private CA certificate that is stored in the S3 bucket as the trust store.",
-            "Upload the provisioned client certificate to an Amazon S3 bucket. Configure the API Gateway mutual TLS to use the client certificate that is stored in the S3 bucket as the trust store.",
-            "Upload the provisioned client certificate private key to an Amazon S3 bucket. Configure the API Gateway mutual TLS to use the private key that is stored in the S3 bucket as the trust store.",
-            "Use AWS Certificate Manager (ACM) to create a private certificate authority (CA). Provision a client certificate that is signed by the private CA.",
-            "Provision a client certificate that is signed by a public certificate authority (CA). Import the certificate into AWS Certificate Manager (ACM)."
+            "Use AWS Control Tower Account Factory to provision a dedicated AWS account for each environment and a CI/CD account. Use AWS CloudFormation StackSets to apply the baseline configuration to the new accounts.",
+            "Create an AWS Control Tower Account Factory Customization (AFC) blueprint that uses the baseline configuration. Use AWS Control Tower Account Factory to provision a dedicated AWS account for each environment and a CI/CD account by using the blueprint.",
+            "Use Organizations to provision a multi-environment AWS account and a CI/CD account. In the Organizations management account, create an AWS Lambda function that assumes the Organizations access role to apply the baseline configuration to the new accounts.",
+            "Use Organizations to provision a dedicated AWS account for each environment, an audit account, and a CI/CD account. Use AWS CloudFormation StackSets to apply the baseline configuration to the new accounts."
         ],
         "correct": [
-            0,
+            1
+        ],
+        "type": "single",
+        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
+    },
+    {
+        "id": 7,
+        "text": "A DevOps engineer needs to implement a solution to install antivirus software on all the Amazon EC2 instances in an AWS account. The EC2 instances run the most recent version of Amazon Linux.The solution must detect all instances and must use an AWS Systems Manager document to install the software if the software is not present.Which solution will meet these requirements?",
+        "options": [
+            "Activate Amazon EC2 scanning on Amazon Inspector to determine if the software is installed on all the EC2 instances. Associate the findings with the Systems Manager document.",
+            "Create an Amazon EventBridge rule that uses AWS CloudTrail to detect the Runinstances API call. Configure inventory collection in Systems Manager Inventory to determine if the software is installed on the EC2 instances. Associate the Systems Manager inventory with the Systems Manager document.",
+            "Set up AWS Config to record all the resources in the account. Create an AWS Config custom rule to determine if the software is installed on all the EC2 instances. Configure an automatic remediation action that uses the Systems Manager document for noncompliant EC2 instances.",
+            "Create an association in Systems Manager State Manager. Target all the managed nodes. Include the software in the association. Configure the association to use the Systems Manager document."
+        ],
+        "correct": [
             3
         ],
-        "type": "multiple",
+        "type": "single",
+        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
+    },
+    {
+        "id": 8,
+        "text": "A company wants to use AWS Systems Manager documents to bootstrap physical laptops for developers. The bootstrap code is stored in GitHub. A DevOps engineer has already created a Systems Manager activation, installed the Systems Manager agent with the registration code, and installed an activation ID on all the laptops.Which set of steps should be taken next?",
+        "options": [
+            "Configure the Systems Manager document to use the aws-configurePackage plugin with an install action and point to the Git repository.",
+            "Configure the Systems Manager document to use the aws-downloadContent plugin with a sourceType of GitHub and sourceInfo with the repository details.",
+            "Configure the Systems Manager document to use the aws:softwareInventory plugin and run the script from the Git repository.",
+            "Configure the Systems Manager document to use the AWS-RunShellScript command to copy the files from GitHub to Amazon S3, then use the aws-downloadContent plugin with a sourceType of S3."
+        ],
+        "correct": [
+            1
+        ],
+        "type": "single",
+        "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
+    },
+    {
+        "id": 9,
+        "text": "A company uses an Amazon Elastic Kubernetes Service (Amazon EKS) cluster to host its machine learning (ML) application. As the ML model and the container image size grow, the time that new pods take to start up has increased to several minutes.A DevOps engineer needs to reduce the startup time to seconds. The solution must also reduce the startup time to seconds when the pod runs on nodes that were recently added to the cluster.The DevOps engineer creates an Amazon EventBridge rule that invokes an automation in AWS Systems Manager. The automation prefetches the container images from an Amazon Elastic Container Registry (Amazon ECR) repository when new images are pushed to the repository. The DevOps engineer also configures tags to be applied to the cluster and the node groups.What should the DevOps engineer do next to meet the requirements?",
+        "options": [
+            "Create an IAM role that has a policy that allows EventBridge to use Systems Manager to run commands in the EKS cluster's control plane nodes. Create a Systems Manager State Manager association that uses the control plane nodes' tags to prefetch corresponding container images.",
+            "Create an IAM role that has a policy that allows EventBridge to use Systems Manager to run commands in the EKS cluster's nodes. Create a Systems Manager State Manager association that uses the nodes' tags to prefetch corresponding container images.",
+            "Create an IAM role that has a policy that allows EventBridge to use Systems Manager to run commands in the EKS cluster's control plane nodes. Create a Systems Manager State Manager association that uses the nodes' tags to prefetch corresponding container images.",
+            "Create an IAM role that has a policy that allows EventBridge to use Systems Manager to run commands in the EKS cluster's nodes. Create a Systems Manager State Manager association that uses the nodes' machine size to prefetch corresponding container images."
+        ],
+        "correct": [
+            1
+        ],
+        "type": "single",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     },
     {
         "id": 10,
-        "text": "A company runs a web application that extends across multiple Availability Zones. The company uses an Application Load Balancer (ALB) for routing, AWS Fargate for the application, and Amazon Aurora for the application data. The company uses AWS CloudFormation templates to deploy the application. The company stores all Docker images in an Amazon Elastic Container Registry (Amazon ECR) repository in the same AWS account and AWS Region.A DevOps engineer needs to establish a disaster recovery (DR) process in another Region. The solution must meet an RPO of 8 hours and an RTO of 2 hours. The company sometimes needs more than 2 hours to build the Docker images from the Dockerfile.Which solution will meet the RTO and RPO requirements MOST cost-effectively?",
+        "text": "A DevOps engineer is setting up an Amazon Elastic Container Service (Amazon ECS) blue/green deployment for an application by using AWS CodeDeploy and AWS CloudFormation. During the deployment window, the application must be highly available and CodeDeploy must shift 10% of traffic to a new version of the application every minute until all traffic is shifted.Which configuration should the DevOps engineer add in the CloudFormation template to meet these requirements?",
         "options": [
-            "Copy the CloudFormation templates to an Amazon S3 bucket in the DR Region. Use Amazon EventBridge to schedule an AWS Lambda function to take an hourly snapshot of the Aurora database and of the most recent Docker image in the ECR repository. Copy the snapshot and the Docker image to the DR Region. In case of DR, use the CloudFormation template with the most recent Aurora snapshot and the Docker image from the local ECR repository to launch a new CloudFormation stack in the DR Region.",
-            "Copy the CloudFormation templates and the Dockerfile to an Amazon S3 bucket in the DR Region. Use AWS Backup to configure automated Aurora cross-Region hourly snapshots. In case of DR, build the most recent Docker image and upload the Docker image to an ECR repository in the DR Region. Use the CloudFormation template that has the most recent Aurora snapshot and the Docker image from the ECR repository to launch a new CloudFormation stack in the DR Region. Update the application DNS records to point to the new ALB.",
-            "Copy the CloudFormation templates to an Amazon S3 bucket in the DR Region. Configure Aurora automated backup Cross-Region Replication. Configure ECR Cross-Region Replication. In case of DR, use the CloudFormation template with the most recent Aurora snapshot and the Docker image from the local ECR repository to launch a new CloudFormation stack in the DR Region. Update the application DNS records to point to the new ALB.",
-            "Copy the CloudFormation templates to an Amazon S3 bucket in the DR Region. Deploy a second application CloudFormation stack in the DR Region. Reconfigure Aurora to be a global database. Update both CloudFormation stacks when a new application release in the current Region is needed. In case of DR, update the application DNS records to point to the new ALB."
+            "Add an AppSpec file with the ECSCanary10Percent5Minutes deployment configuration.",
+            "Add an AppSpec file with the CodeDeployDefault.ECSLinearl OPercentEveryl Minutes deployment configuration.",
+            "Add the AWS::CodeDeployBlueGreen transform and the AWS::CodeDepioy::BlueGreen hook parameter with the ECSCanary10Percent5Minutes deployment configuration.",
+            "Add the AWS::CodeDeployBlueGreen transform and the AWS::CodeDeploy::BlueGreen hook parameter with the CodeDeployDefault.ECSLinear10PercentEvery1Minutes deployment configuration."
         ],
         "correct": [
-            2
+            3
         ],
         "type": "single",
         "explanation": "Đáp án được chọn nhiều nhất trong cộng đồng. Xem thêm giải thích trong file gốc."
     }
 ]
-
         let currentQuestionIndex = 0;
         let userAnswers = [];
         let startTime = Date.now();
